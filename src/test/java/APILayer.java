@@ -1,16 +1,21 @@
+import org.json.JSONObject;
+import org.junit.Assert;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 
 public class APILayer {
     private HttpURLConnection connection;
 
-    private void setupConnection() throws MalformedURLException {
+    private void closeConnection() {
+        connection.disconnect();
+    }
+
+    public JSONObject post(String jsonInputString) throws Throwable{
         try {
             URL url = new URL("https://1ryu4whyek.execute-api.us-west-2.amazonaws.com/dev/skus");
 
@@ -23,14 +28,6 @@ public class APILayer {
         } catch (Exception m) {
             System.out.println(m.getMessage());
         }
-    }
-
-    private void closeConnection() {
-        connection.disconnect();
-    }
-
-    public String post(String jsonInputString) throws Throwable{
-        setupConnection();
         String stringResponse;
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = jsonInputString.getBytes("utf-8");
@@ -45,13 +42,104 @@ public class APILayer {
                 response.append(responseLine.trim());
             }
             stringResponse = response.toString();
-            //System.out.println(response.toString());
-            //TODO: Add checks for response failure here
         }
 
         closeConnection();
 
-        return stringResponse;
+        return new JSONObject(stringResponse);
         }
+
+    public JSONObject get() throws Throwable{
+
+        try {
+            URL url = new URL("https://1ryu4whyek.execute-api.us-west-2.amazonaws.com/dev/skus");
+
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type","application/json; utf-8");
+            connection.setDoInput(true);
+            connection.setDoOutput(false);
+
+        } catch (Exception m) {
+            System.out.println(m.getMessage());
+        }
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                connection.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        // print result
+        System.out.println(response.toString());
+
+        closeConnection();
+
+        return new JSONObject(response);
     }
+
+    public JSONObject get(String jsonInputString) throws Throwable{
+
+        try {
+            URL url = new URL("https://1ryu4whyek.execute-api.us-west-2.amazonaws.com/dev/skus/"+jsonInputString );
+
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type","application/json; utf-8");
+            connection.setDoInput(true);
+            connection.setDoOutput(false);
+
+        } catch (Exception m) {
+            System.out.println(m.getMessage());
+        }
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                connection.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        // print result
+        System.out.println(response.toString());
+
+        closeConnection();
+
+        return new JSONObject(response.toString());
+    }
+
+    public int delete(String jsonInputString) throws Throwable{
+        try {
+            URL url = new URL("https://1ryu4whyek.execute-api.us-west-2.amazonaws.com/dev/skus/"+jsonInputString);
+
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Content-Type","application/json; utf-8");
+            //enables send request content
+            connection.setDoOutput(true);
+
+        } catch (Exception m) {
+            System.out.println(m.getMessage());
+        }
+        String stringResponse;
+
+        try(OutputStream os = connection.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        int responseCode = connection.getResponseCode();
+
+        closeConnection();
+
+        return responseCode;
+    }
+}
 
