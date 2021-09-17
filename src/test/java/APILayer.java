@@ -1,4 +1,6 @@
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.junit.Assert;
 
 import java.io.BufferedReader;
@@ -38,6 +40,11 @@ public class APILayer {
                 new InputStreamReader(connection.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
             String responseLine = null;
+            int responseCode = connection.getResponseCode();
+            if(responseCode!=200){
+                System.out.println("The response code was not 200, instead it was: " +responseCode);
+                Assert.fail();
+            }
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
@@ -49,7 +56,7 @@ public class APILayer {
         return new JSONObject(stringResponse);
         }
 
-    public JSONObject get() throws Throwable{
+    public JSONArray get() throws Throwable{
 
         try {
             URL url = new URL("https://1ryu4whyek.execute-api.us-west-2.amazonaws.com/dev/skus");
@@ -64,8 +71,12 @@ public class APILayer {
             System.out.println(m.getMessage());
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                connection.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        int responseCode = connection.getResponseCode();
+        if(responseCode!=200){
+            System.out.println("The response code was not 200, instead it was: " +responseCode);
+            Assert.fail();
+        }
         String inputLine;
         StringBuffer response = new StringBuffer();
 
@@ -74,12 +85,11 @@ public class APILayer {
         }
         in.close();
 
-        // print result
-        System.out.println(response.toString());
-
         closeConnection();
 
-        return new JSONObject(response);
+        //JSONArray test = new JSONArray(response);
+        //TODO this does not work, will need to use GSON and map? seems wrong
+        return new JSONArray(response.toString());
     }
 
     public JSONObject get(String jsonInputString) throws Throwable{
@@ -97,8 +107,12 @@ public class APILayer {
             System.out.println(m.getMessage());
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                connection.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        int responseCode = connection.getResponseCode();
+        if(responseCode!=200){
+            System.out.println("The response code was not 200, instead it was: " +responseCode);
+            Assert.fail();
+        }
         String inputLine;
         StringBuffer response = new StringBuffer();
 
@@ -106,9 +120,6 @@ public class APILayer {
             response.append(inputLine);
         }
         in.close();
-
-        // print result
-        System.out.println(response.toString());
 
         closeConnection();
 
@@ -128,7 +139,6 @@ public class APILayer {
         } catch (Exception m) {
             System.out.println(m.getMessage());
         }
-        String stringResponse;
 
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = jsonInputString.getBytes("utf-8");
