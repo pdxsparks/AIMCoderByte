@@ -1,14 +1,12 @@
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONWriter;
-import org.junit.Assert;
-
+import org.junit.jupiter.api.Assertions;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import java.nio.charset.StandardCharsets;
 
 public class APILayer {
     private HttpURLConnection connection;
@@ -32,18 +30,18 @@ public class APILayer {
         }
         String stringResponse;
         try(OutputStream os = connection.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
+            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
         try(BufferedReader br = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
-            String responseLine = null;
+            String responseLine;
             int responseCode = connection.getResponseCode();
             if(responseCode!=200){
                 System.out.println("The response code was not 200, instead it was: " +responseCode);
-                Assert.fail();
+                Assertions.fail();
             }
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
@@ -75,10 +73,10 @@ public class APILayer {
         int responseCode = connection.getResponseCode();
         if(responseCode!=200){
             System.out.println("The response code was not 200, instead it was: " +responseCode);
-            Assert.fail();
+            Assertions.fail();
         }
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -111,10 +109,12 @@ public class APILayer {
         int responseCode = connection.getResponseCode();
         if(responseCode!=200){
             System.out.println("The response code was not 200, instead it was: " +responseCode);
-            Assert.fail();
+            Assertions.fail();
         }
         String inputLine;
-        StringBuffer response = new StringBuffer();
+
+
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -141,7 +141,7 @@ public class APILayer {
         }
 
         try(OutputStream os = connection.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
+            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
