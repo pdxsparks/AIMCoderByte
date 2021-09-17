@@ -74,15 +74,30 @@ class JUnit5ExampleTest {
 
     @Test
     public void happyPathGetAll(){
-        JSONArray response;
+        //make two skus to guarentee that the test will have more than 1
         try{
-            response = api.get();
+            response = api.post("{\"sku\":\"sparksTest1\",\"description\": \""+description+"\",\"price\":\""+price+"\"}");
         } catch(Throwable t) {
             System.out.println("The following Throwable was thrown: " + t);
             Assertions.fail();
         }
-
-        //TODO needs to parse JSONArray
+        try{
+            response = api.post("{\"sku\":\"sparksTest2\",\"description\": \""+description+"\",\"price\":\""+price+"\"}");
+        } catch(Throwable t) {
+            System.out.println("The following Throwable was thrown: " + t);
+            Assertions.fail();
+        }
+        JSONArray arrayResponse;
+        try{
+            arrayResponse = api.get();
+            if(arrayResponse.length() <= 2) {
+                System.out.println("The expected result was greater than 1 and instead was less than 1");
+                Assertions.fail();
+            }
+        } catch(Throwable t) {
+            System.out.println("The following Throwable was thrown: " + t);
+            Assertions.fail();
+        }
     }
 
     @Test

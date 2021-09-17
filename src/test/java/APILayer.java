@@ -1,4 +1,5 @@
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import java.io.BufferedReader;
@@ -85,9 +86,11 @@ public class APILayer {
 
         closeConnection();
 
-        //JSONArray test = new JSONArray(response);
+        JSONArray jsonResponse = new JSONArray(response.toString());
+
+//        JSONArray test = new JSONArray(response);
         //TODO this does not work, will need to use GSON and map? seems wrong
-        return new JSONArray(response.toString());
+        return jsonResponse;
     }
 
     public JSONObject get(String jsonInputString) throws Throwable{
