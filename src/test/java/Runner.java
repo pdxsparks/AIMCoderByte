@@ -100,4 +100,36 @@ class JUnit5ExampleTest {
         }
     }
 
+    @Test
+    public void MalformedPOST(){
+        try{
+            response = api.post("{[\"sku\":\""+createSku+"\",\"description\": \""+description+"\",\"price\":\""+price+"\"]}");
+        } catch(Throwable t) {
+            if (!t.toString().contains("Server returned HTTP response code: 502 for URL:")) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void MalformedGET(){
+        try{
+            response = api.post("{"+createSku+"}");
+        } catch(Throwable t) {
+            if (!t.toString().contains("Server returned HTTP response code: 502 for URL:")) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void MalformedGETAll(){
+        try{
+            response = api.post("{}");
+        } catch(Throwable t) {
+            if (!t.toString().contains("Server returned HTTP response code: 400 for URL:")) {
+                Assert.fail();
+            }
+        }
+    }
 }
